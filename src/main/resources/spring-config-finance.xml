@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+	
+	
+	<bean id="faqsMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="com.faqs.mapper.FaqsMapper"/>
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+	</bean>
+	
+	
+	<bean id="faqs" class="com.faqs.service.FaqsServiceImpl" autowire="byType" />
+	<!-- 	<property name="bd" value="Billdao"/>
+	</bean> -->
+<!-- 
+
+	<bean id="userdao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="Manage_Dao.userDao"/>
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+	</bean>
+	
+	
+	<bean id="user" class="Manage_service.userServiceImpl" autowire="byType" />
+		<property name="ud" value="userdao"/>
+	</bean>
+	
+	<bean id="providerdao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="Manage_Dao.providerDao"/>
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+	</bean>
+	
+	
+	<bean id="provider" class="Manage_service.providerServiceImpl" autowire="byType" />
+		<property name="pd" value="providerdao"/>
+	</bean> -->
+</beans>

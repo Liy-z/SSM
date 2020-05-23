@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.faqs.mapper.FaqsMapper" >
+
+<resultMap id="BaseResultMap" type="com.faqs.eneity.Faqs" >
+    <id column="id" property="id" />
+    <result column="title" property="title"  />
+    <result column="createdate" property="createdate"  />
+    <result column="content" property="content"/>
+    <result property="classid" column="classid"/>
+    <association property="classes" resultMap="ClassResultMap" />
+</resultMap>
+
+<resultMap id="ClassResultMap" type="com.faqs.eneity.Classes">
+		<id property="id" column="id"/>
+        <result property="cname" column="cname"/>
+</resultMap>
+
+	<!-- 测试一对多sql查询 -->
+	<resultMap id="ClassesResult" type="com.faqs.eneity.Classes">
+		<id property="id" column="id"/>
+        <result property="cname" column="cname"/>
+        <collection property="faqsList"  ofType="com.faqs.eneity.Faqs"> 
+	        <id column="id" property="f_id" />
+		    <result column="title" property="title"  />
+		    <result column="createdate" property="createdate"  />
+		    <result column="content" property="content"/>
+		    <result property="classid" column="classid"/>
+        </collection>
+	</resultMap>
+	
+	<!-- 测试一对多sql查询 -->
+	<select id="showCId" resultMap="ClassesResult">
+		SELECT f.id f_id,cname,title,createdate,content FROM `classes` c
+			RIGHT JOIN faqs f on f.classid = c.id
+		<trim prefix="Where" prefixOverrides="and | or">
+		<if test=" Cid != null ">
+			 AND c.id = #{Cid}
+		</if>
+	</trim>
+	</select>
+	
+	<select id="count" resultType="int">
+		select count(1) from faqs
+	</select>
+	
+	  <select id="showFaqsIn" resultMap="BaseResultMap" >
+	    select id,title,classid,createdate from faqs where id in
+		<foreach collection="array" item="Fid" open="(" separator="," close=")">
+			#{Fid}
+		</foreach>
+	  </select>
+	  <!--  -->
+	   <select id="showFaqsList" resultMap="BaseResultMap" >
+	    select id,title,classid,createdate from faqs where id in
+		<foreach collection="list" item="Fid" open="(" separator="," close=")">
+			#{Fid}
+		</foreach>
+	  </select>
+	  
+	  <!--  -->
+	   <select id="showFaqsMap" resultMap="BaseResultMap" >
+	    select id,title,classid,createdate from faqs 
+	     where classid=#{aaa} and id in
+		<foreach collection="Ikey" item="Fid" open="(" separator="," close=")">
+			#{Fid}
+		</foreach>
+	  </select>
+	  
+	
+	 <!-- 查询全部常见问题 -->
+  <select id="selectFaqs" resultMap="BaseResultMap" >
+    select f.id,title,classid,c.cname,createdate from faqs f
+		left join classes c on c.id = f.classid
+	<trim prefix="Where" prefixOverrides="and | or">
+		<if test="classid != null">
+		 	AND classid = #{classid}
+		</if>
+		<if test=" title != null and title !='' ">
+			 AND title like concat('%',#{title},'%')
+		</if>
+	</trim>
+<!-- 	<where>
+		<if test="classid != null">
+		 AND classid = #{classid}
+		</if>
+		<if test=" title != null and title !=''">
+		 AND title like concat('%',#{title},'%')
+		</if>
+	</where> -->
+  </select>
+  <!-- 查询内容 -->
+  <select id="selectFaqsKey" resultMap="BaseResultMap" >
+  	select f.id,title,c.cname,createdate,content from faqs f
+		left join classes c on c.id = f.classid
+    where f.id=#{id}
+  </select>
+  <!-- 查询分类 -->
+  <select id="selectClasses" resultType="com.faqs.eneity.Classes" >
+    select id,cname from classes
+  </select>
+  <!-- 添加常见问题 -->
+  <insert id="insertFaqs" parameterType="com.faqs.eneity.Faqs">
+  	INSERT INTO `faqs`(title,classid,content) VALUES (#{title},#{classid},#{content});
+  </insert>
+  
+  <update id="UpdateFaqs" parameterType="com.faqs.eneity.Faqs" >
+    update faqs
+    	<trim prefix="set" suffixOverrides="," suffix="where id = #{id}">
+	    	<if test="title != null">title = #{title},</if>
+	    	<if test="createdate != null">createdate = #{createdate},</if>
+	    	<if test="content != null">content = #{content},</if>
+	    	<if test="classid != null">classid = #{classid}</if>
+    	</trim>
+    <!-- <set>
+    	<if test="title != null">title = #{title},</if>
+    	<if test="createdate != null">createdate = #{createdate},</if>
+    	<if test="content != null">content = #{content},</if>
+    	<if test="classid != null">classid = #{classid}</if>
+    </set>
+    where id = #{id} -->
+  </update>
+	 
+  
+</mapper>
